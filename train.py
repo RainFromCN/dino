@@ -12,8 +12,7 @@ if __name__ == '__main__':
     os.mkdir(config.CHECKPOINT_DIR)
     # 设置Logging
     logging.basicConfig(filename=os.path.join(config.LOGGING_DIR, 'train.log'), 
-                        encoding='utf-8', level=logging.INFO, 
-                        format='%(asctime)s [%(levelname)s]: %(message)s')
+                        level=logging.INFO, format='%(asctime)s [%(levelname)s]: %(message)s')
 
     # 设置模型, dataloader以及优化器
     data_loader = get_dataloader(get_dataset(is_train=True))
