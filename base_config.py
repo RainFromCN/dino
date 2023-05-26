@@ -1,7 +1,7 @@
 LOCAL = True
 
 # About loading & saving
-BATCH_SIZE = 8
+BATCH_SIZE = 4
 NUM_WORKERS = 3
 TRAIN_SET_DIR = 'D:\datasets\mini\seg_train\seg_train' if LOCAL else '/root/autodl-tmp/imagenet/train'
 DEV_SET_DIR = None
