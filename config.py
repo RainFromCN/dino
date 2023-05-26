@@ -3,7 +3,11 @@ from utils import cosine_scheduler
 import numpy as np
 import torch
 from data import get_dataset, get_dataloader
+import os
 
+
+CHECKPOINT_DIR = os.path.join(OUTPUT_DIR, 'checkpoint')
+LOGGING_DIR = os.path.join(OUTPUT_DIR, 'logging')
 
 torch.random.manual_seed(SEED)
 DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"

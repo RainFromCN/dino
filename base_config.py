@@ -1,13 +1,13 @@
-DEBUG = True
+LOCAL = True
 
 # About loading & saving
 BATCH_SIZE = 8
 NUM_WORKERS = 3
-TRAIN_SET_DIR = 'D:\datasets\mini\seg_train\seg_train' if DEBUG else '/root/autodl-tmp/imagenet/train'
+TRAIN_SET_DIR = 'D:\datasets\mini\seg_train\seg_train' if LOCAL else '/root/autodl-tmp/imagenet/train'
 DEV_SET_DIR = None
 TEST_SET_DIR = None
-LOGGING_FILE = './train.log'
-OUTPUT_FILE = './result.pth'
+OUTPUT_DIR = './output'
+STATE_SAVE_FREQ = 1 # 每个epoch保存一个state dict
 
 # About dataset augmentation
 NUM_LOCAL_CROPS = 8

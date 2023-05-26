@@ -3,13 +3,16 @@ from dino import DINO
 from utils import cancel_gradients_last_layer
 import config
 import torch
-import logging
+import logging, os
 
 
 if __name__ == '__main__':
+    os.mkdir(config.OUTPUT_DIR)
+    os.mkdir(config.LOGGING_DIR)
+    os.mkdir(config.CHECKPOINT_DIR)
     # 设置Logging
-    logging.basicConfig(filename=config.LOGGING_FILE, encoding='utf-8',
-                        level=logging.INFO, 
+    logging.basicConfig(filename=os.path.join(config.LOGGING_DIR, 'train.log'), 
+                        encoding='utf-8', level=logging.INFO, 
                         format='%(asctime)s [%(levelname)s]: %(message)s')
 
     # 设置模型, dataloader以及优化器
@@ -65,3 +68,6 @@ if __name__ == '__main__':
         mean_loss_last_epoch = (sum_loss_last_epoch / config.NITER_PER_EP)
         logging.info(f"Epoch[{epoch}/{config.EPOCHS}]:\t" 
                      f"loss={mean_loss_last_epoch}")
+        
+        if epoch % config.STATE_SAVE_FREQ == 0:
+            torch.save(model.state_dict(), os.path.join(config.CHECKPOINT_DIR, f'{epoch:04}.pth'))
