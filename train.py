@@ -19,6 +19,7 @@ if __name__ == '__main__':
     model = DINO(feat_dim=config.FEAT_DIM, 
                  drop_path=config.DROP_PATH).to(config.DEVICE)
     optimizer = torch.optim.AdamW(model.param_groups())
+    scaler = torch.cuda.amp.GradScaler()
 
     iter = 0
     loss_record = [] # 记录loss
@@ -43,13 +44,25 @@ if __name__ == '__main__':
             # 学生网络使用优化器进行更新
             optimizer.zero_grad()
             loss = model(images, temp_std, temp_tea)
-            loss.backward()
-            torch.nn.utils.clip_grad.clip_grad_norm_(
-                model.student.parameters(),
-                max_norm=config.CLIP_GRAD_NORM)
-            if epoch < config.FREEZE_LAST_LAYER:
-                cancel_gradients_last_layer(model.dino_loss)
-            optimizer.step()
+            if config.AMP_FLAG:
+                # 使用自动混合精度
+                scaler.scale(loss).backward()
+                scaler.unscale_(optimizer)
+                torch.nn.utils.clip_grad_norm_(model.student.parameters(),
+                                               max_norm=config.GLIP_GRAD_NORM)
+                if epoch < config.FREEZE_LAST_LAYER:
+                    cancel_gradients_last_layer(model.dino_loss)
+                scaler.step(optimizer)
+                scaler.update()
+            else:
+                # 不使用自动混合精度
+                loss.backward()
+                torch.nn.utils.clip_grad.clip_grad_norm_(
+                    model.student.parameters(),
+                    max_norm=config.CLIP_GRAD_NORM)
+                if epoch < config.FREEZE_LAST_LAYER:
+                    cancel_gradients_last_layer(model.dino_loss)
+                optimizer.step()
 
             # 教师网络使用EMA进行更新
             with torch.no_grad():

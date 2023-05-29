@@ -51,7 +51,7 @@ def cosine_scheduler(base_value, final_value, epochs, niter_per_ep,
 
 def init_linear_module(module):
     assert isinstance(module, nn.Linear)
-    nn.init.xavier_uniform_(module.weight)
+    nn.init.trunc_normal_(module.weight, std=0.02)
     if module.bias is not None:
         nn.init.constant_(module.bias, 0)
 
@@ -63,8 +63,8 @@ def init_layernorm_module(module):
 
 
 def init_clstoken(parameter):
-    nn.init.xavier_uniform_(parameter)
+    nn.init.trunc_normal_(parameter, std=0.02)
 
 
 def init_posembed(parameter):
-    nn.init.xavier_uniform_(parameter)
+    nn.init.trunc_normal_(parameter, std=0.02)
