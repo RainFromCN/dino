@@ -15,6 +15,7 @@ GLOBAL_CROP_SCALE = (0.4,1)
 
 # About optimization
 EPOCHS = 800
+USE_AMP = True  # 自动混合精度
 OPTIM_METHOD = 'adamw'
 CLIP_GRAD_NORM = 3
 LEARNING_RATE_BASE = 0.0005

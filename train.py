@@ -22,10 +22,8 @@ if __name__ == '__main__':
     scaler = torch.cuda.amp.GradScaler()
     if "cuda" in config.DEVICE and config.DEVICE_COUNT > 1:
         # 使用Data Parallel
-        model = torch.nn.DataParallel(model).to(config.DEVICE)
-    else:
-        # 使用单GPU或者CPU进行训练
-        model = model.to(config.DEVICE)
+        model = torch.nn.DataParallel(model)
+    model = model.to(config.DEVICE)
 
     iter = 0
     loss_record = [] # 记录loss
@@ -50,12 +48,12 @@ if __name__ == '__main__':
             # 学生网络使用优化器进行更新
             optimizer.zero_grad()
             loss = model(images, temp_std, temp_tea)
-            if config.AMP_FLAG:
+            if config.USE_AMP and "cuda" in config.DEVICE:
                 # 使用自动混合精度
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)
                 torch.nn.utils.clip_grad_norm_(model.student.parameters(),
-                                               max_norm=config.GLIP_GRAD_NORM)
+                                               max_norm=config.CLIP_GRAD_NORM)
                 if epoch < config.FREEZE_LAST_LAYER:
                     cancel_gradients_last_layer(model.dino_loss)
                 scaler.step(optimizer)

@@ -12,7 +12,6 @@ LOGGING_DIR = os.path.join(OUTPUT_DIR, 'logging')
 torch.random.manual_seed(SEED)
 DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 DEVICE_COUNT = torch.cuda.device_count()
-AMP_FLAG = torch.cuda.amp.is_available()
 NITER_PER_EP = len(get_dataloader(get_dataset()))
 
 LR_SCHEDULE = cosine_scheduler(

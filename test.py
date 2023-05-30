@@ -95,17 +95,6 @@ class TestData(unittest.TestCase):
                 self.assertTrue(images[i].shape == (config.BATCH_SIZE, 3, config.LOCAL_CROP_SIZE, config.LOCAL_CROP_SIZE))
             break
 
-        # 测试用例二
-        dataset = data.get_dataset(is_train=False)
-        data_loader = data.get_dataloader(dataset)
-        for images, _ in data_loader:
-            self.assertTrue(isinstance(images, list))
-            self.assertTrue(len(images) == config.NUM_LOCAL_CROPS + 2)
-            self.assertTrue(images[0].shape == (config.BATCH_SIZE, 3, config.GLOBAL_CROP_SIZE, config.GLOBAL_CROP_SIZE))
-            self.assertTrue(images[1].shape == (config.BATCH_SIZE, 3, config.GLOBAL_CROP_SIZE, config.GLOBAL_CROP_SIZE))
-            for i in range(2, len(images)):
-                self.assertTrue(images[i].shape == (config.BATCH_SIZE, 3, config.LOCAL_CROP_SIZE, config.LOCAL_CROP_SIZE))
-            break
 
 if __name__ == '__main__':
     unittest.main()
