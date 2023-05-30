@@ -1,11 +1,8 @@
-LOCAL = True
-
 # About loading & saving
 BATCH_SIZE = 4
 NUM_WORKERS = 3
-TRAIN_SET_DIR = 'D:\datasets\mini\seg_train\seg_train' if LOCAL else '/root/autodl-tmp/imagenet/train'
-DEV_SET_DIR = None
-TEST_SET_DIR = None
+# TRAIN_SET_DIR = '/root/autodl-tmp/imagenet/train'
+TRAIN_SET_DIR = 'D:\datasets\mini\seg_train\seg_train'
 OUTPUT_DIR = './output'
 STATE_SAVE_FREQ = 1 # 每个epoch保存一个state dict
 

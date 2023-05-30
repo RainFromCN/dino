@@ -17,9 +17,15 @@ if __name__ == '__main__':
     # 设置模型, dataloader以及优化器
     data_loader = get_dataloader(get_dataset(is_train=True))
     model = DINO(feat_dim=config.FEAT_DIM, 
-                 drop_path=config.DROP_PATH).to(config.DEVICE)
+                 drop_path=config.DROP_PATH)
     optimizer = torch.optim.AdamW(model.param_groups())
     scaler = torch.cuda.amp.GradScaler()
+    if "cuda" in config.DEVICE and config.DEVICE_COUNT > 1:
+        # 使用Data Parallel
+        model = torch.nn.DataParallel(model).to(config.DEVICE)
+    else:
+        # 使用单GPU或者CPU进行训练
+        model = model.to(config.DEVICE)
 
     iter = 0
     loss_record = [] # 记录loss
