@@ -28,7 +28,7 @@ data_loader = get_dataloader(get_dataset(is_train=True))
 model = DINO(feat_dim=config.FEAT_DIM, 
                 drop_path=config.DROP_PATH)
 optimizer = torch.optim.AdamW(model.param_groups())
-scaler = torch.cuda.amp.GradScaler()
+scaler = torch.cuda.amp.GradScaler(enabled=config.USE_AMP)
 if "cuda" in config.DEVICE and config.DEVICE_COUNT > 1:
     # 使用Data Parallel
     model = torch.nn.DataParallel(model)
@@ -58,7 +58,7 @@ for epoch in range(config.EPOCHS):
         # 学生网络使用优化器进行更新
         optimizer.zero_grad()
         loss = model(images, temp_std, temp_tea)
-        if config.USE_AMP and "cuda" in config.DEVICE:
+        if config.USE_AMP:
             # 使用自动混合精度
             scaler.scale(loss).backward()
             scaler.unscale_(optimizer)

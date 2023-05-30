@@ -13,6 +13,7 @@ torch.random.manual_seed(SEED)
 DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 DEVICE_COUNT = torch.cuda.device_count()
 NITER_PER_EP = len(get_dataloader(get_dataset()))
+USE_AMP = USE_AMP and torch.cuda.is_available()
 
 LR_SCHEDULE = cosine_scheduler(
     base_value=LEARNING_RATE_BASE, final_value=LEARNING_RATE_FINAL, 
