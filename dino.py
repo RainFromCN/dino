@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from vit import vit_small
+from vit import vit_small, vit_tiny
 from utils import init_linear_module
 
 
@@ -114,7 +114,7 @@ class DINOFeatExtractor(nn.Module):
         drop_path : Float(0~1). Transformer中drop_path的控制比率
         """
         super().__init__()
-        self.backbone = vit_small(drop_path)
+        self.backbone = vit_tiny(drop_path)
         self.dinohead = DINOHead(input_dim=self.backbone.embed_dim,
                                  feat_dim=feat_dim, 
                                  norm_last_layer=norm_last_layer)

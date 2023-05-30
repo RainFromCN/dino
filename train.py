@@ -4,6 +4,7 @@ from utils import cancel_gradients_last_layer
 import config
 import torch
 import logging, os
+import time
 
 
 if __name__ == '__main__':
@@ -33,6 +34,7 @@ if __name__ == '__main__':
         temp_tea = config.TEMP_TEACHER_SCHEDULE[epoch]
 
         for images, _ in data_loader:
+            start = time.time()
             # 将图片迁移到设备中
             images = [img.to(config.DEVICE) for img in images]
 
@@ -77,7 +79,7 @@ if __name__ == '__main__':
                     param_teacher.data.add_(param_student.data * (1 - momentum_teacher))
 
             iter += 1
-            print(".", end='')
+            print(f"Iter-{iter}: \t {config.BATCH_SIZE / (time.time() - start):.5f} images/s")
             loss_record.append(loss.item())
         
         sum_loss_last_epoch = sum(loss_record[-config.NITER_PER_EP])
