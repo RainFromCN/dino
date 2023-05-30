@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 from functools import lru_cache
 
 from base_config import (
-    TRAIN_SET_DIR, TEST_SET_DIR, BATCH_SIZE, NUM_WORKERS,
+    TRAIN_SET_DIR, BATCH_SIZE, NUM_WORKERS,
     NUM_LOCAL_CROPS, LOCAL_CROP_SIZE, LOCAL_CROP_SCALE,
     GLOBAL_CROP_SIZE, GLOBAL_CROP_SCALE)
 
@@ -100,8 +100,9 @@ def get_dataset(is_train=True):
         dataset = ImageFolder(root=TRAIN_SET_DIR,
                               transform=DataAugmentation())
     else:
-        dataset = ImageFolder(root=TEST_SET_DIR,
-                              transform=DataAugmentation())
+        raise NotImplementedError
+        # dataset = ImageFolder(root=TEST_SET_DIR,
+        #                       transform=DataAugmentation())
     return dataset
 
 

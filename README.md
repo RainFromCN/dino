@@ -1,2 +1,3 @@
-# my_dino2
+# DINO
+
  Self distillation with no label 论文复现
