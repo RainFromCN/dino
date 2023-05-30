@@ -1,8 +1,8 @@
 # About loading & saving
 BATCH_SIZE = 1024
 NUM_WORKERS = 3
-# TRAIN_SET_DIR = '/root/autodl-tmp/imagenet/train'
-TRAIN_SET_DIR = 'D:\datasets\mini\seg_train\seg_train'
+TRAIN_SET_DIR = '/root/autodl-tmp/imagenet/train'
+DEV_SET_DIR = '/root/autodl-tmp/imagenet/validation'
 OUTPUT_DIR = './output'
 STATE_SAVE_FREQ = 1 # 每个epoch保存一个state dict
 

@@ -5,10 +5,8 @@ from PIL import ImageFilter, ImageOps
 from torch.utils.data import DataLoader
 from functools import lru_cache
 
-from base_config import (
-    TRAIN_SET_DIR, BATCH_SIZE, NUM_WORKERS,
-    NUM_LOCAL_CROPS, LOCAL_CROP_SIZE, LOCAL_CROP_SCALE,
-    GLOBAL_CROP_SIZE, GLOBAL_CROP_SCALE)
+
+import config
 
 
 class GaussianBlur:
@@ -54,10 +52,10 @@ class DataAugmentation:
             T.RandomApply([T.Grayscale(num_output_channels=3)], p=0.2),
         ])
 
-        local_cropper = T.RandomResizedCrop(size=LOCAL_CROP_SIZE, 
-                                           scale=LOCAL_CROP_SCALE)
-        global_cropper = T.RandomResizedCrop(size=GLOBAL_CROP_SIZE, 
-                                             scale=GLOBAL_CROP_SCALE)
+        local_cropper = T.RandomResizedCrop(size=config.LOCAL_CROP_SIZE, 
+                                           scale=config.LOCAL_CROP_SCALE)
+        global_cropper = T.RandomResizedCrop(size=config.GLOBAL_CROP_SIZE, 
+                                             scale=config.GLOBAL_CROP_SCALE)
 
         normalizer = T.Compose([
             T.ToTensor(),
@@ -90,24 +88,23 @@ class DataAugmentation:
         global_crops = [self.global_crop1(image),
                         self.global_crop2(image)]
         local_crops = [self.local_crop(image)
-                       for _ in range(NUM_LOCAL_CROPS)]
+                       for _ in range(config.NUM_LOCAL_CROPS)]
         return global_crops + local_crops
 
 
 @lru_cache(maxsize=2)
 def get_dataset(is_train=True):
     if is_train:
-        dataset = ImageFolder(root=TRAIN_SET_DIR,
+        dataset = ImageFolder(root=config.TRAIN_SET_DIR,
                               transform=DataAugmentation())
     else:
-        raise NotImplementedError
-        # dataset = ImageFolder(root=TEST_SET_DIR,
-        #                       transform=DataAugmentation())
+        dataset = ImageFolder(root=config.DEV_SET_DIR,
+                              transform=DataAugmentation())
     return dataset
 
 
 @lru_cache(maxsize=2)
 def get_dataloader(dataset):
-    data_loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True,
-                             num_workers=NUM_WORKERS, drop_last=True)
+    data_loader = DataLoader(dataset, batch_size=config.BATCH_SIZE, shuffle=True,
+                             num_workers=config.NUM_WORKERS, drop_last=True)
     return data_loader
