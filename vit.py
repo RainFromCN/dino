@@ -9,6 +9,9 @@ from utils import (init_linear_module, init_layernorm_module,
 vit_small = lambda drop_path: ViT(embed_dim=384, num_heads=6, num_blks=12, 
                                   patch_size=8, drop_path=drop_path)
 
+vit_tiny = lambda drop_path: ViT(embed_dim=128, num_heads=4, num_blks=4,
+                                 patch_size=8, drop_path=drop_path)
+
 
 class MSA(nn.Module):
     def __init__(self, embed_dim, num_heads):
