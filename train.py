@@ -6,6 +6,7 @@ import torch
 import logging, os
 import time
 import argparse
+import pathlib
 
 
 parser = argparse.ArgumentParser(prog="DINO")
@@ -16,9 +17,9 @@ if args.batch_size: config.BATCH_SIZE = args.batch_size
 if args.epoch: config.EPOCHS = args.epoch
 
 # 创建输出目录
-os.mkdir(config.OUTPUT_DIR, exist_ok=True)
-os.mkdir(config.LOGGING_DIR, exist_ok=True)
-os.mkdir(config.CHECKPOINT_DIR, exist_ok=True)
+pathlib.Path(config.OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
+pathlib.Path(config.LOGGING_DIR).mkdir(parents=True, exist_ok=True)
+pathlib.Path(config.CHECKPOINT_DIR).mkdir(parents=True, exist_ok=True)
 # 设置Logging
 logging.basicConfig(filename=os.path.join(config.LOGGING_DIR, 'train.log'), 
                     level=logging.INFO, format='%(asctime)s [%(levelname)s]: %(message)s')
