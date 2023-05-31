@@ -82,7 +82,7 @@ for epoch in range(config.EPOCHS):
         print(f"Iter-{iter}: \t {config.BATCH_SIZE / (time.time() - start):.5f} images/s")
         loss_record.append(loss.item())
     
-    sum_loss_last_epoch = sum(loss_record[-config.NITER_PER_EP])
+    sum_loss_last_epoch = sum(loss_record[-config.NITER_PER_EP:])
     mean_loss_last_epoch = (sum_loss_last_epoch / config.NITER_PER_EP)
     logging.info(f"Epoch[{epoch}/{config.EPOCHS}]:\t" 
                     f"loss={mean_loss_last_epoch}")
