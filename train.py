@@ -5,16 +5,7 @@ import config
 import torch
 import logging, os
 import time
-import argparse
 import pathlib
-
-
-parser = argparse.ArgumentParser(prog="DINO")
-parser.add_argument("--batch_size", type=int)
-parser.add_argument("--epoch", type=int)
-args = parser.parse_args()
-if args.batch_size: config.BATCH_SIZE = args.batch_size
-if args.epoch: config.EPOCHS = args.epoch
 
 # 创建输出目录
 pathlib.Path(config.OUTPUT_DIR).mkdir(parents=True, exist_ok=True)

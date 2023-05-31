@@ -1,6 +1,13 @@
+import argparse
+parser = argparse.ArgumentParser(prog="DINO")
+parser.add_argument("--batch_size", type=int)
+parser.add_argument("--epoch", type=int)
+args = parser.parse_args()
+
+
 # About loading & saving
-BATCH_SIZE = 1024
-NUM_WORKERS = 3
+BATCH_SIZE = args.batch_size if args.batch_size else 128
+NUM_WORKERS = 8
 TRAIN_SET_DIR = '/root/autodl-tmp/imagenet/train'
 DEV_SET_DIR = '/root/autodl-tmp/imagenet/validation'
 OUTPUT_DIR = './output'
@@ -14,12 +21,12 @@ LOCAL_CROP_SCALE = (0.05,0.4)
 GLOBAL_CROP_SCALE = (0.4,1)
 
 # About optimization
-EPOCHS = 100
+EPOCHS = args.epoch if args.epoch else 800
 USE_AMP = True  # 自动混合精度
 OPTIM_METHOD = 'adamw'
 CLIP_GRAD_NORM = 3
 LEARNING_RATE_BASE = 0.0005
-LEARNING_RATE_FINAL = 10 # 学习率warmup的epoch
+LEARNING_RATE_FINAL = 0.000001 # 学习率warmup的epoch
 LEARNING_RATE_WARMUP_EPOCHS = 10
 WEIGHT_DECAY_BASE = 0.04
 WEIGHT_DECAY_FINAL = 0.4
