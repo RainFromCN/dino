@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 from functools import lru_cache
 
 
-import config
+import base_config as config
 
 
 class GaussianBlur:
