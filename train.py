@@ -122,7 +122,7 @@ if __name__ == '__main__':
         os.environ["MASTER_PORT"] = "12345"
         local_world_size = torch.cuda.device_count()
         logging.info(f"Use distributed data parallel on {local_world_size} GPUs.")
-        mp.spawn(main_worker, args=(local_world_size), nprocs=local_world_size, join=True)
+        mp.spawn(main_worker, args=(local_world_size,), nprocs=local_world_size, join=True)
 
     else:
         logging.info("Use single GPU for training.")
