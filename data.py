@@ -4,6 +4,7 @@ import random
 from PIL import ImageFilter, ImageOps
 from torch.utils.data import DataLoader
 from functools import lru_cache
+from torch.utils.data.distributed import DistributedSampler
 
 
 import base_config as config
@@ -104,7 +105,8 @@ def get_dataset(is_train=True):
 
 
 @lru_cache(maxsize=2)
-def get_dataloader(dataset):
+def get_dataloader(dataset, sampler):
     data_loader = DataLoader(dataset, batch_size=config.BATCH_SIZE, shuffle=True,
-                             num_workers=config.NUM_WORKERS, drop_last=True)
+                             num_workers=config.NUM_WORKERS, drop_last=True,
+                             pin_memory=True, sampler=sampler)
     return data_loader
