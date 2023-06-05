@@ -110,7 +110,10 @@ def main_worker(local_rank, local_world_size):
                         f"loss={mean_loss_last_epoch}")
         
         if epoch % config.STATE_SAVE_FREQ == 0:
-            torch.save(model.state_dict(), os.path.join(config.CHECKPOINT_DIR, f'{epoch:04}.pth'))
+            if config.USE_DDP:
+                torch.save(model.module.state_dict(), os.path.join(config.CHECKPOINT_DIR, f'{epoch:04}.pth'))
+            else:
+                torch.save(model.state_dict(), os.path.join(config.CHECKPOINT_DIR, f'{epoch:04}.pth'))
 
 
 if __name__ == '__main__':
