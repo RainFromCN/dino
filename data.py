@@ -106,7 +106,7 @@ def get_dataset(is_train=True):
 
 @lru_cache(maxsize=2)
 def get_dataloader(dataset, sampler):
-    data_loader = DataLoader(dataset, batch_size=config.BATCH_SIZE, shuffle=True,
+    data_loader = DataLoader(dataset, batch_size=config.BATCH_SIZE, shuffle=False,
                              num_workers=config.NUM_WORKERS, drop_last=True,
                              pin_memory=True, sampler=sampler)
     return data_loader

@@ -35,15 +35,16 @@ def main_worker(local_rank, local_world_size):
     if config.USE_DDP:
         logging.info(f"Process {local_rank} started!")
         setup_ddp(local_rank, local_world_size)
-        model = DDP(model, device_ids=[local_rank])
-        sampler = DistributedSampler()
+        model = DDP(model, device_ids=[local_rank], find_unused_parameters=True)
+        sampler = DistributedSampler(dataset)
+        optimizer = torch.optim.AdamW(model.module.param_groups())
     else:
+        optimizer = torch.optim.AdamW(model.param_groups())
         sampler = None
 
     # 设置模型, dataloader以及优化器
     data_loader = get_dataloader(dataset, sampler)
-    
-    optimizer = torch.optim.AdamW(model.param_groups())
+
     scaler = torch.cuda.amp.GradScaler(enabled=config.USE_AMP)
 
     iter = 0
@@ -76,29 +77,50 @@ def main_worker(local_rank, local_world_size):
                 # 使用自动混合精度
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)
-                torch.nn.utils.clip_grad_norm_(model.student.parameters(),
-                                                max_norm=config.CLIP_GRAD_NORM)
+                if config.USE_DDP:
+                    torch.nn.utils.clip_grad_norm_(model.module.student.parameters(),
+                                                   max_norm=config.CLIP_GRAD_NORM)
+                else:
+                    torch.nn.utils.clip_grad_norm_(model.student.parameters(),
+                                                   max_norm=config.CLIP_GRAD_NORM)
                 if epoch < config.FREEZE_LAST_LAYER:
-                    cancel_gradients_last_layer(model.dino_loss)
+                    if config.USE_DDP:
+                        cancel_gradients_last_layer(model.module.dino_loss)
+                    else:
+                        cancel_gradients_last_layer(model.dino_loss)
                 scaler.step(optimizer)
                 scaler.update()
             else:
                 # 不使用自动混合精度
                 loss.backward()
-                torch.nn.utils.clip_grad.clip_grad_norm_(
-                    model.student.parameters(),
-                    max_norm=config.CLIP_GRAD_NORM)
+                if config.USE_DDP:
+                    torch.nn.utils.clip_grad.clip_grad_norm_(
+                        model.module.student.parameters(),
+                        max_norm=config.CLIP_GRAD_NORM)
+                else:
+                    torch.nn.utils.clip_grad.clip_grad_norm_(
+                        model.student.parameters(),
+                        max_norm=config.CLIP_GRAD_NORM)
                 if epoch < config.FREEZE_LAST_LAYER:
-                    cancel_gradients_last_layer(model.dino_loss)
+                    if config.USE_DDP:
+                        cancel_gradients_last_layer(model.module.dino_loss)
+                    else:
+                        cancel_gradients_last_layer(model.dino_loss)
                 optimizer.step()
 
             # 教师网络使用EMA进行更新
             with torch.no_grad():
                 momentum_teacher = config.MOMENTUM_TEACHER_SCHEDULE[iter]
-                for param_student, param_teacher in zip(model.student.parameters(), 
-                                                        model.teacher.parameters()):
-                    param_teacher.data.mul_(momentum_teacher)
-                    param_teacher.data.add_(param_student.data * (1 - momentum_teacher))
+                if config.USE_DDP:
+                    for param_student, param_teacher in zip(model.module.student.parameters(), 
+                                                            model.module.teacher.parameters()):
+                        param_teacher.data.mul_(momentum_teacher)
+                        param_teacher.data.add_(param_student.data * (1 - momentum_teacher))
+                else:
+                    for param_student, param_teacher in zip(model.student.parameters(), 
+                                                            model.teacher.parameters()):
+                        param_teacher.data.mul_(momentum_teacher)
+                        param_teacher.data.add_(param_student.data * (1 - momentum_teacher))
 
             iter += 1
             print(f"Iter-{iter}: \t {config.BATCH_SIZE / (time.time() - start):.5f} images/s")
@@ -119,7 +141,7 @@ def main_worker(local_rank, local_world_size):
 if __name__ == '__main__':
     if config.USE_DDP:
         os.environ["MASTER_ADDR"] = "localhost"
-        os.environ["MASTER_PORT"] = "12345"
+        os.environ["MASTER_PORT"] = "23456"
         local_world_size = torch.cuda.device_count()
         logging.info(f"Use distributed data parallel on {local_world_size} GPUs.")
         mp.spawn(main_worker, args=(local_world_size,), nprocs=local_world_size, join=True)
